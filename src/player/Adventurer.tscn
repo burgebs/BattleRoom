@@ -1,0 +1,527 @@
+[gd_scene load_steps=29 format=2]
+
+[ext_resource path="res://Assets/Art/player/adventurer_fullsheet.png" type="Texture" id=1]
+[ext_resource path="res://src/player/Adventurer.gd" type="Script" id=2]
+[ext_resource path="res://src/player/Player State Machine.gd" type="Script" id=3]
+[ext_resource path="res://src/player/states/on_ground/Idle.gd" type="Script" id=4]
+[ext_resource path="res://src/player/states/on_ground/Running.gd" type="Script" id=5]
+[ext_resource path="res://src/player/states/in_air/Jumping.gd" type="Script" id=6]
+[ext_resource path="res://src/player/states/in_air/Falling.gd" type="Script" id=7]
+[ext_resource path="res://src/player/states/Dashing.gd" type="Script" id=8]
+[ext_resource path="res://src/player/states/on_wall/Wall clinging.gd" type="Script" id=9]
+[ext_resource path="res://src/player/states/on_ground/Sliding.gd" type="Script" id=10]
+[ext_resource path="res://src/player/states/Hitlocked.gd" type="Script" id=11]
+[ext_resource path="res://src/player/states/Casting.gd" type="Script" id=12]
+[ext_resource path="res://src/player/states/on_ground/Crouch.gd" type="Script" id=13]
+[ext_resource path="res://src/player/JumpBuffer.gd" type="Script" id=14]
+[ext_resource path="res://src/player/Coyote.gd" type="Script" id=15]
+[ext_resource path="res://src/player/Raycasts.gd" type="Script" id=16]
+[ext_resource path="res://src/player/LandingLockout.gd" type="Script" id=17]
+
+[sub_resource type="CapsuleShape2D" id=1]
+radius = 4.0
+height = 12.0
+
+[sub_resource type="Animation" id=2]
+resource_name = "dash_loop"
+length = 0.2
+loop = true
+step = 0.05
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.1 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 74, 75 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("CollisionShape2D:rotation_degrees")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 90.0 ]
+}
+
+[sub_resource type="Animation" id=3]
+resource_name = "dash_start"
+length = 0.25
+step = 0.05
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.05, 0.15, 0.2 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"update": 1,
+"values": [ 72, 73, 75, 74 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("CollisionShape2D:rotation_degrees")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 90.0 ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("Raycasts/AttackDetector2:enabled")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("Raycasts/AttackDetector1:enabled")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
+tracks/4/type = "method"
+tracks/4/path = NodePath("AnimationPlayer")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/keys = {
+"times": PoolRealArray( 0.25 ),
+"transitions": PoolRealArray( 1 ),
+"values": [ {
+"args": [ "\"dash_loop\"" ],
+"method": "play"
+} ]
+}
+
+[sub_resource type="CapsuleShape2D" id=4]
+radius = 4.0
+height = 12.0
+
+[sub_resource type="Animation" id=5]
+length = 0.2
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.1 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 30, 31 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("CollisionShape2D:shape")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ SubResource( 4 ) ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("CollisionShape2D:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 2, 0 ) ]
+}
+
+[sub_resource type="Animation" id=6]
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.2, 0.4, 0.569359, 0.745772 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 0.594604 ),
+"update": 1,
+"values": [ 0, 1, 2, 3, 1 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("CollisionShape2D:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 0, 0 ) ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("CollisionShape2D:rotation_degrees")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 0.0 ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("CollisionShape2D:shape")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ SubResource( 1 ) ]
+}
+
+[sub_resource type="Animation" id=7]
+length = 0.5
+step = 0.05
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.1, 0.25, 0.4 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"update": 1,
+"values": [ 18, 19, 20, 21 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("CollisionShape2D:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 0.1, 0.25, 0.4 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"update": 1,
+"values": [ Vector2( 2, 0 ), Vector2( 2, 0 ), Vector2( 2, 0 ), Vector2( 4, 0 ) ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("CollisionShape2D:shape")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0, 0.25 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ SubResource( 1 ), SubResource( 1 ) ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("CollisionShape2D:rotation_degrees")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 5.0 ]
+}
+
+[sub_resource type="Animation" id=8]
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 0 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("CollisionShape2D:shape")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ SubResource( 4 ) ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("CollisionShape2D:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 0, 0 ) ]
+}
+
+[sub_resource type="Animation" id=9]
+length = 0.6
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.1, 0.2, 0.3, 0.4, 0.5 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 1, 1 ),
+"update": 1,
+"values": [ 12, 13, 14, 15, 16, 17 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("CollisionShape2D:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ Vector2( 5, 0 ) ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("CollisionShape2D:rotation_degrees")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 10.0 ]
+}
+
+[sub_resource type="CircleShape2D" id=10]
+radius = 10.5
+
+[sub_resource type="Animation" id=11]
+length = 0.4
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.1, 0.2, 0.3 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"update": 1,
+"values": [ 24, 25, 26, 27 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("CollisionShape2D:shape")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ SubResource( 10 ) ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("CollisionShape2D:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 0, 0 ) ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("CollisionShape2D:rotation_degrees")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray(  ),
+"transitions": PoolRealArray(  ),
+"update": 0,
+"values": [  ]
+}
+
+[node name="Adventurer" type="KinematicBody2D"]
+collision_layer = 2
+collision_mask = 29
+script = ExtResource( 2 )
+
+[node name="Sprite" type="Sprite" parent="."]
+texture = ExtResource( 1 )
+vframes = 14
+hframes = 6
+frame = 74
+region_rect = Rect2( 8, 6, 202, 36 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+rotation = 1.5708
+shape = SubResource( 1 )
+one_way_collision_margin = 0.0
+
+[node name="Raycasts" type="RayCast2D" parent="."]
+script = ExtResource( 16 )
+
+[node name="GroundDetector1" type="RayCast2D" parent="Raycasts"]
+position = Vector2( -3, 0 )
+enabled = true
+cast_to = Vector2( 0, 12 )
+collide_with_areas = true
+
+[node name="GroundDetector2" type="RayCast2D" parent="Raycasts"]
+position = Vector2( 3, 0 )
+enabled = true
+cast_to = Vector2( 0, 12 )
+collide_with_areas = true
+
+[node name="AttackDetector1" type="RayCast2D" parent="Raycasts"]
+position = Vector2( 0, -3 )
+enabled = true
+cast_to = Vector2( 12, 0 )
+collision_mask = 6
+
+[node name="AttackDetector2" type="RayCast2D" parent="Raycasts"]
+position = Vector2( 0, 3 )
+enabled = true
+cast_to = Vector2( 12, 0 )
+collision_mask = 6
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+autoplay = "idle"
+anims/dash_loop = SubResource( 2 )
+anims/dash_start = SubResource( 3 )
+anims/fall = SubResource( 5 )
+anims/idle = SubResource( 6 )
+anims/jump = SubResource( 7 )
+anims/ready = SubResource( 8 )
+anims/run = SubResource( 9 )
+anims/smrslt = SubResource( 11 )
+
+[node name="Player State Machine" type="Node" parent="."]
+script = ExtResource( 3 )
+START_STATE = NodePath("Idle")
+
+[node name="JumpBuffer" type="Timer" parent="Player State Machine"]
+wait_time = 0.05
+one_shot = true
+script = ExtResource( 14 )
+__meta__ = {
+"_editor_description_": "Input buffer for jumps (1 frame= .016s at 60fps)"
+}
+
+[node name="Coyote" type="Timer" parent="Player State Machine"]
+wait_time = 0.05
+one_shot = true
+script = ExtResource( 15 )
+
+[node name="LandingLockout" type="Timer" parent="Player State Machine"]
+wait_time = 0.1
+one_shot = true
+script = ExtResource( 17 )
+
+[node name="Idle" type="Node" parent="Player State Machine"]
+script = ExtResource( 4 )
+
+[node name="Running" type="Node" parent="Player State Machine"]
+script = ExtResource( 5 )
+
+[node name="Sliding" type="Node" parent="Player State Machine"]
+script = ExtResource( 10 )
+
+[node name="Crouch" type="Node" parent="Player State Machine"]
+script = ExtResource( 13 )
+
+[node name="Jumping" type="Node" parent="Player State Machine"]
+script = ExtResource( 6 )
+GRAVITY = 500.0
+MAX_X_SPEED = 500.0
+SPEED_CAP_X = 300.0
+MAX_Y_SPEED = 1000.0
+SPEED_CAP_Y = 800.0
+AIR_ACCELERATION = 100.0
+Y_SPEED_DAMPENING_FACTOR = 5.0
+JUMP_FORCE = -300.0
+
+[node name="Falling" type="Node" parent="Player State Machine"]
+script = ExtResource( 7 )
+GRAVITY = 500.0
+MAX_X_SPEED = 500.0
+SPEED_CAP_X = 300.0
+AIR_ACCELERATION = 100.0
+
+[node name="Wall clinging" type="Node" parent="Player State Machine"]
+script = ExtResource( 9 )
+
+[node name="Dashing" type="Node" parent="Player State Machine"]
+script = ExtResource( 8 )
+
+[node name="Casting" type="Node" parent="Player State Machine"]
+script = ExtResource( 12 )
+
+[node name="Hitlocked" type="Node" parent="Player State Machine"]
+script = ExtResource( 11 )
+[connection signal="landed" from="Raycasts" to="Player State Machine/Coyote" method="_on_Raycasts_landed"]
+[connection signal="ungrounded" from="Raycasts" to="Player State Machine/LandingLockout" method="_on_Raycasts_ungrounded"]
+[connection signal="ungrounded" from="Raycasts" to="Player State Machine/Coyote" method="_on_Raycasts_ungrounded"]
+[connection signal="timeout" from="Player State Machine/JumpBuffer" to="Player State Machine/JumpBuffer" method="_on_JumpBuffer_timeout"]
+[connection signal="timeout" from="Player State Machine/Coyote" to="Player State Machine/Coyote" method="_on_Coyote_timeout"]
+[connection signal="timeout" from="Player State Machine/LandingLockout" to="Player State Machine/LandingLockout" method="_on_LandingLockout_timeout"]
+[connection signal="restored" from="Player State Machine/Dashing" to="Player State Machine" method="_on_Dashing_restored"]
+[connection signal="used" from="Player State Machine/Dashing" to="Player State Machine" method="_on_Dashing_used"]
